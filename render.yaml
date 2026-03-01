@@ -1,0 +1,10 @@
+services:
+  - type: static
+    name: Hormon
+    env: static
+    plan: free
+    repo: https://github.com/Stasshe/Hormon
+    branch: master
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    healthCheckPath: /
