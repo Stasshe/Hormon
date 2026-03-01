@@ -7,7 +7,7 @@ name: Deploy Pages
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ["main"]
+    branches: ["master"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -39,26 +39,22 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            .next/cache
-          # Generate a new cache whenever packages or source files change.
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
-          # If source files changed but packages didn't, rebuild from a prior cache.
+            node_modules
+          # Generate a new cache whenever lockfile or package.json changes.
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('package.json') }}
+          # If exact key miss, allow partial restore by lockfile key prefix.
           restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
+            ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
       - name: Install dependencies
         run: npm install
-      - name: Build with Next.js
-        env:
-          NEXT_PUBLIC_IS_PRODUCTION_BUILD: 'true'
-          NEXT_PUBLIC_BASE_PATH: 'Kyoute-Keisya-calc'
-          BUILD_MODE: production
+      - name: Build with Vite
         run: npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
-      - name: List file
-        run: ls -la && ls -la out
+      - name: List dist
+        run: ls -la ./dist || true
 
   # Deployment job
   deploy:
