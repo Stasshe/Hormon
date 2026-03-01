@@ -1,7 +1,7 @@
 {
-  "name": "hormon",
-  "version": "0.1.0",
-  "description": "Hormon! - A bacterial roguelike game built with Phaser 3",
+  "name": "phaser-project-template",
+  "version": "3.55.2",
+  "description": "Phaser 3 starter template with TypeScript and webpack.",
   "homepage": "https://github.com/yandeu/phaser-project-template#readme",
   "main": "index.js",
   "scripts": {
@@ -48,14 +48,14 @@
     "javascript-obfuscator": "^4.0.0",
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
-    "serve": "^13.0.4",
+    "serve": "^14.1.2",
     "ts-loader": "^9.2.6",
     "typescript": "^4.5.3",
     "webpack": "^5.65.0",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.2.3",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.6.0",
     "webpack-merge": "^5.8.0",
     "webpack-obfuscator": "^3.5.0",
-    "workbox-webpack-plugin": "^7.4.0"
+    "workbox-webpack-plugin": "^6.4.2"
   }
 }
