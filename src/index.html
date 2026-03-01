@@ -36,7 +36,7 @@
       }
     </style>
 
-    <noscript>Please enable javascript to continue using this application.</noscript>
+    <!-- moved to body because <noscript> is disallowed inside <head> -->
 
     <!-- installs the serviceWorker -->
     <!-- <script>
@@ -48,6 +48,7 @@
     </script> -->
   </head>
   <body>
+    <noscript>Please enable javascript to continue using this application.</noscript>
     <div id="phaser-game"></div>
     <script type="module" src="/scripts/game.ts"></script>
   </body>
