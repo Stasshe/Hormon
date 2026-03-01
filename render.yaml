@@ -1,6 +1,7 @@
 services:
-  - type: static
+  - type: web
     name: Hormon
+    runtime: static
     env: node
     plan: free
     repo: https://github.com/Stasshe/Hormon
