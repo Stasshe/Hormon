@@ -42,7 +42,6 @@ export default class UIScene extends Phaser.Scene {
       this.hud.showNotification(message);
     });
 
-    // Show tutorial on first launch
     this.showTutorial();
   }
 
@@ -52,41 +51,39 @@ export default class UIScene extends Phaser.Scene {
 
     this.tutorialContainer = this.add.container(0, 0).setDepth(300);
 
-    // Semi-transparent overlay
-    const bg = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.75);
+    const bg = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.8);
     this.tutorialContainer.add(bg);
 
-    // Title
-    const title = this.add.text(width / 2, 40, 'Hormon!', {
+    const title = this.add.text(width / 2, 30, 'Hormon!', {
       fontSize: '42px',
       color: '#44dd44',
       fontStyle: 'bold'
     }).setOrigin(0.5);
     this.tutorialContainer.add(title);
 
-    const subtitle = this.add.text(width / 2, 82, 'Survive as E. coli in the gut', {
-      fontSize: '18px',
+    const subtitle = this.add.text(width / 2, 72, '腸内で生き延びる大腸菌ローグライク', {
+      fontSize: '16px',
       color: '#88ff88'
     }).setOrigin(0.5);
     this.tutorialContainer.add(subtitle);
 
-    // Instructions panel
     const instructions = [
-      { icon: 'WASD/Arrows', desc: 'Move your colony through the intestine' },
-      { icon: 'Goal', desc: 'Grow your colony while keeping the host stable' },
-      { icon: 'Danger', desc: 'Immune cells (blue) attack on contact' },
-      { icon: 'Warning', desc: 'Peristalsis pushes you right every 20s' },
-      { icon: '1 / 2 / 3', desc: 'Skills: Biofilm / Metabolite / Toxin' },
-      { icon: 'Level Up', desc: 'Gain XP, choose gene mutations on level up' },
-      { icon: 'Game Over', desc: 'Colony dies (N=0) or host destabilized' },
+      { icon: 'WASD/矢印', desc: '腸内を移動する' },
+      { icon: '目標', desc: 'コロニーを育てつつ、宿主を安定に保つ' },
+      { icon: '自動攻撃', desc: '近くの競合菌・病原菌を自動でバクテリオシンで攻撃' },
+      { icon: '体当たり', desc: '競合菌にぶつかると互いにダメージ（倒すとXP＋吸収）' },
+      { icon: '免疫細胞', desc: '好中球(青)・マクロファージ(水色)は接触でコロニー減少' },
+      { icon: '蠕動', desc: '20秒ごとに腸が動き、接着力が低いと右に流される' },
+      { icon: '1/2/3キー', desc: 'スキル: バイオフィルム / 代謝物 / 毒素 放出' },
+      { icon: 'レベルアップ', desc: '経験値が溜まると遺伝子変異を選択できる' },
     ];
 
-    const panelY = 115;
+    const panelY = 105;
     instructions.forEach((inst, i) => {
-      const yy = panelY + i * 36;
+      const yy = panelY + i * 32;
 
-      const iconText = this.add.text(width / 2 - 260, yy, inst.icon, {
-        fontSize: '14px',
+      const iconText = this.add.text(width / 2 - 280, yy, inst.icon, {
+        fontSize: '13px',
         color: '#ffdd44',
         fontStyle: 'bold',
         backgroundColor: '#334433',
@@ -94,32 +91,32 @@ export default class UIScene extends Phaser.Scene {
       }).setOrigin(0, 0);
       this.tutorialContainer.add(iconText);
 
-      const descText = this.add.text(width / 2 - 110, yy + 2, inst.desc, {
-        fontSize: '14px',
+      const descText = this.add.text(width / 2 - 130, yy + 2, inst.desc, {
+        fontSize: '13px',
         color: '#ccddcc'
       }).setOrigin(0, 0);
       this.tutorialContainer.add(descText);
     });
 
-    // Legend
-    const legendY = panelY + instructions.length * 36 + 15;
+    // Entity legend
+    const legendY = panelY + instructions.length * 32 + 10;
     const legends = [
-      { color: 0x44dd44, label: 'You (E. coli)' },
-      { color: 0xddaa44, label: 'Competitor (Bacteroides)' },
-      { color: 0xdd4444, label: 'Pathogen (C. difficile)' },
-      { color: 0x4488dd, label: 'Neutrophil (immune)' },
-      { color: 0x44dddd, label: 'Macrophage (immune)' },
+      { color: 0x44dd44, label: '自分（大腸菌）' },
+      { color: 0xddaa44, label: '競合菌（バクテロイデス）' },
+      { color: 0xdd4444, label: '病原菌（C.ディフィシル）' },
+      { color: 0x4488dd, label: '好中球（免疫）' },
+      { color: 0x44dddd, label: 'マクロファージ（免疫）' },
     ];
 
-    const legendTitle = this.add.text(width / 2, legendY, '-- Entities --', {
-      fontSize: '13px',
+    const legendTitle = this.add.text(width / 2, legendY, '-- 登場する生物 --', {
+      fontSize: '12px',
       color: '#aaaaaa'
     }).setOrigin(0.5);
     this.tutorialContainer.add(legendTitle);
 
     legends.forEach((leg, i) => {
-      const lx = width / 2 - 220 + (i % 3) * 180;
-      const ly = legendY + 20 + Math.floor(i / 3) * 26;
+      const lx = width / 2 - 240 + (i % 3) * 200;
+      const ly = legendY + 18 + Math.floor(i / 3) * 24;
 
       const swatch = this.add.rectangle(lx, ly + 7, 12, 12, leg.color);
       this.tutorialContainer.add(swatch);
@@ -131,40 +128,34 @@ export default class UIScene extends Phaser.Scene {
       this.tutorialContainer.add(label);
     });
 
-    // Tile layer guide
-    const tileY = legendY + 78;
-    const tileTitle = this.add.text(width / 2, tileY, '-- Map Layers (top to bottom) --', {
-      fontSize: '13px',
-      color: '#aaaaaa'
+    // Game over conditions
+    const goY = legendY + 72;
+    const goTitle = this.add.text(width / 2, goY, '-- ゲームオーバー条件 --', {
+      fontSize: '12px',
+      color: '#ff8888'
     }).setOrigin(0.5);
-    this.tutorialContainer.add(tileTitle);
+    this.tutorialContainer.add(goTitle);
 
-    const layers = [
-      { color: 0x6b3a5e, label: 'Epithelial - More O2, lower capacity' },
-      { color: 0x4a3066, label: 'Mucus - High capacity, rich nutrients' },
-      { color: 0x2d1b4e, label: 'Lumen - Main gut interior' },
+    const goLines = [
+      'コロニーが0になる（全滅）',
+      '宿主安定度が下がりすぎる（炎症暴走）'
     ];
-
-    layers.forEach((l, i) => {
-      const ly = tileY + 18 + i * 24;
-      const swatch = this.add.rectangle(width / 2 - 200, ly + 7, 16, 12, l.color);
-      this.tutorialContainer.add(swatch);
-      const label = this.add.text(width / 2 - 180, ly, l.label, {
+    goLines.forEach((line, i) => {
+      const t = this.add.text(width / 2, goY + 18 + i * 20, line, {
         fontSize: '12px',
-        color: '#cccccc'
-      });
-      this.tutorialContainer.add(label);
+        color: '#ffaaaa'
+      }).setOrigin(0.5);
+      this.tutorialContainer.add(t);
     });
 
     // Start button
-    const startBtn = this.add.text(width / 2, height - 40, '[ Click or press any key to start ]', {
+    const startBtn = this.add.text(width / 2, height - 35, '[ クリック or キー押下 でスタート ]', {
       fontSize: '22px',
       color: '#44dd44',
       fontStyle: 'bold'
     }).setOrigin(0.5);
     this.tutorialContainer.add(startBtn);
 
-    // Blink the start text
     this.tweens.add({
       targets: startBtn,
       alpha: 0.4,
@@ -173,11 +164,9 @@ export default class UIScene extends Phaser.Scene {
       repeat: -1
     });
 
-    // Pause game while tutorial is showing
     const gs = this.scene.get('GameScene');
     gs.scene.pause();
 
-    // Dismiss on click or keypress
     const dismiss = () => {
       if (this.tutorialShown) return;
       this.tutorialShown = true;

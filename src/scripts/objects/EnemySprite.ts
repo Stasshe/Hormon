@@ -23,13 +23,11 @@ export class EnemySprite {
       const color = this.colorMap[enemy.type] || 0xffffff;
 
       if (enemy.type === 'neutrophil' || enemy.type === 'macrophage') {
-        // Immune cells: different shape
         gfx.fillStyle(color, 1);
         gfx.fillCircle(16, 16, enemy.type === 'macrophage' ? 15 : 12);
         gfx.lineStyle(2, 0xffffff, 0.5);
         gfx.strokeCircle(16, 16, enemy.type === 'macrophage' ? 15 : 12);
       } else {
-        // Bacteria: rod shape
         gfx.fillStyle(color, 1);
         gfx.fillRoundedRect(4, 8, 24, 16, 8);
         gfx.lineStyle(1, 0xffffff, 0.4);
@@ -48,12 +46,11 @@ export class EnemySprite {
     this.sprite.setDepth(8);
     this.sprite.setDisplaySize(tileSize * 0.7, tileSize * 0.7);
 
-    // Type label
     const labels: Record<string, string> = {
-      competitor: 'Bacteroides',
-      pathogen: 'C.diff',
-      neutrophil: 'Neutro',
-      macrophage: 'Macro'
+      competitor: '競合菌',
+      pathogen: '病原菌',
+      neutrophil: '好中球',
+      macrophage: 'マクロファージ'
     };
     this.nameText = scene.add.text(px, py - tileSize * 0.5, labels[enemy.type] || '', {
       fontSize: '9px',
@@ -65,7 +62,6 @@ export class EnemySprite {
     const targetX = enemy.pos.tileX * tileSize + tileSize / 2;
     const targetY = enemy.pos.tileY * tileSize + tileSize / 2;
 
-    // Smooth movement
     this.sprite.x += (targetX - this.sprite.x) * 0.15;
     this.sprite.y += (targetY - this.sprite.y) * 0.15;
 

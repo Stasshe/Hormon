@@ -16,7 +16,6 @@ export class LevelUpUI {
     if (this.isShowing) return;
     this.isShowing = true;
 
-    // Pause game
     this.gameScene.scene.pause();
 
     const gs = this.gameScene as any;
@@ -29,25 +28,22 @@ export class LevelUpUI {
 
     this.container = this.scene.add.container(0, 0).setDepth(200);
 
-    // Overlay
     const overlay = this.scene.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.7);
     this.container.add(overlay);
 
-    // Title
-    const title = this.scene.add.text(width / 2, 120, `LEVEL UP! (Lv.${player.level})`, {
+    const title = this.scene.add.text(width / 2, 120, `レベルアップ！（Lv.${player.level}）`, {
       fontSize: '36px',
       color: '#ffdd44',
       fontStyle: 'bold'
     }).setOrigin(0.5);
     this.container.add(title);
 
-    const subtitle = this.scene.add.text(width / 2, 165, 'Choose a gene mutation:', {
+    const subtitle = this.scene.add.text(width / 2, 165, '遺伝子変異を選択してください:', {
       fontSize: '18px',
       color: '#cccccc'
     }).setOrigin(0.5);
     this.container.add(subtitle);
 
-    // Choices
     choices.forEach((choice, i) => {
       const cx = width / 2 - 200 + i * 200;
       const cy = height / 2 + 20;
@@ -58,7 +54,7 @@ export class LevelUpUI {
       this.container.add(bg);
 
       const nameText = this.scene.add.text(cx, cy - 40, choice.name, {
-        fontSize: '16px',
+        fontSize: '14px',
         color: '#88ddff',
         fontStyle: 'bold'
       }).setOrigin(0.5);
@@ -75,13 +71,8 @@ export class LevelUpUI {
       bg.on('pointerdown', () => {
         this.selectChoice(player, choice, skillSystem);
       });
-
-      bg.on('pointerover', () => {
-        bg.setFillStyle(0x446688);
-      });
-      bg.on('pointerout', () => {
-        bg.setFillStyle(0x334466);
-      });
+      bg.on('pointerover', () => bg.setFillStyle(0x446688));
+      bg.on('pointerout', () => bg.setFillStyle(0x334466));
     });
   }
 

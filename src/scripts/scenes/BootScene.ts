@@ -1,4 +1,5 @@
 import { setConfig } from '../config/gameConfig';
+import gameConfigData from '../../assets/config/gameConfig.json';
 
 export default class BootScene extends Phaser.Scene {
   constructor() {
@@ -6,9 +7,6 @@ export default class BootScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.json('gameConfig', 'assets/config/gameConfig.json');
-
-    // Progress bar
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
     const barWidth = 320;
@@ -19,7 +17,7 @@ export default class BootScene extends Phaser.Scene {
     progressBox.fillRect(width / 2 - barWidth / 2, height / 2 - barHeight / 2, barWidth, barHeight);
 
     const progressBar = this.add.graphics();
-    const loadingText = this.add.text(width / 2, height / 2 - 30, 'Loading...', {
+    const loadingText = this.add.text(width / 2, height / 2 - 30, '読み込み中...', {
       fontSize: '18px',
       color: '#ffffff'
     }).setOrigin(0.5);
@@ -38,8 +36,13 @@ export default class BootScene extends Phaser.Scene {
   }
 
   create() {
-    const config = this.cache.json.get('gameConfig');
-    setConfig(config);
+    setConfig(gameConfigData as any);
+
+    // Stop any leftover scenes before starting fresh
+    this.scene.stop('GameScene');
+    this.scene.stop('UIScene');
+    this.scene.stop('PauseScene');
+    this.scene.stop('ResultScene');
 
     this.scene.start('GameScene');
     this.scene.start('UIScene');

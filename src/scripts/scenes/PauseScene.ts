@@ -7,17 +7,15 @@ export default class PauseScene extends Phaser.Scene {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
 
-    // Dim overlay
-    const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.6);
+    this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.6);
 
-    const titleText = this.add.text(width / 2, height / 2 - 60, 'PAUSED', {
+    this.add.text(width / 2, height / 2 - 60, 'ポーズ', {
       fontSize: '48px',
       color: '#ffffff',
       fontStyle: 'bold'
     }).setOrigin(0.5);
 
-    // Resume button
-    const resumeBtn = this.add.text(width / 2, height / 2 + 20, '[ Resume ]', {
+    const resumeBtn = this.add.text(width / 2, height / 2 + 20, '[ 再開 ]', {
       fontSize: '28px',
       color: '#44cc44',
       backgroundColor: '#222222',
@@ -28,12 +26,10 @@ export default class PauseScene extends Phaser.Scene {
       this.scene.resume('GameScene');
       this.scene.stop();
     });
-
     resumeBtn.on('pointerover', () => resumeBtn.setColor('#88ff88'));
     resumeBtn.on('pointerout', () => resumeBtn.setColor('#44cc44'));
 
-    // Quit button
-    const quitBtn = this.add.text(width / 2, height / 2 + 80, '[ Quit ]', {
+    const quitBtn = this.add.text(width / 2, height / 2 + 80, '[ やめる ]', {
       fontSize: '28px',
       color: '#cc4444',
       backgroundColor: '#222222',
@@ -46,11 +42,9 @@ export default class PauseScene extends Phaser.Scene {
       this.scene.start('BootScene');
       this.scene.stop();
     });
-
     quitBtn.on('pointerover', () => quitBtn.setColor('#ff8888'));
     quitBtn.on('pointerout', () => quitBtn.setColor('#cc4444'));
 
-    // ESC to resume
     this.input.keyboard!.on('keydown-ESC', () => {
       this.scene.resume('GameScene');
       this.scene.stop();

@@ -8,11 +8,11 @@ export interface SkillChoice {
 }
 
 const ALL_PASSIVE_SKILLS: SkillChoice[] = [
-  { id: 'regulator_up', name: 'Regulator+', description: 'Increase regulator expression, reducing toxin' },
-  { id: 'adhesion_up', name: 'Adhesion+', description: 'Increase adhesion, resist peristalsis' },
-  { id: 'biofilm_up', name: 'Biofilm+', description: 'Increase biofilm, resist flow and immune' },
-  { id: 'metabolic_efficiency_up', name: 'Efficiency+', description: 'Reduce energy cost of gene expression' },
-  { id: 'quorum_suppression', name: 'Quorum Suppress', description: 'Reduce quorum signal sensitivity' }
+  { id: 'regulator_up', name: 'レギュレーター強化', description: '制御遺伝子を強化し、毒素発現を抑制する' },
+  { id: 'adhesion_up', name: '接着力強化', description: '接着力を上げ、蠕動に耐える' },
+  { id: 'biofilm_up', name: 'バイオフィルム強化', description: 'バイオフィルムを増やし、流れと免疫に耐える' },
+  { id: 'metabolic_efficiency_up', name: '代謝効率化', description: '遺伝子発現のエネルギーコストを削減' },
+  { id: 'quorum_suppression', name: 'クオラム抑制', description: 'クオラム信号の感度を下げる' }
 ];
 
 export class SkillSystem {
@@ -23,18 +23,11 @@ export class SkillSystem {
   }
 
   updateXP(player: PlayerState, dt: number) {
-    const cfg = this.config.player;
-    // XP from survival time
-    player.xp += cfg.xp_per_second * dt;
-
-    // XP from being on nutrient-rich tiles is handled elsewhere
+    player.xp += this.config.player.xp_per_second * dt;
   }
 
   checkLevelUp(player: PlayerState): boolean {
-    if (player.xp >= player.xpToNext) {
-      return true;
-    }
-    return false;
+    return player.xp >= player.xpToNext;
   }
 
   performLevelUp(player: PlayerState) {
@@ -62,17 +55,14 @@ export class SkillSystem {
         player.gene.biofilm = Math.min(1, player.gene.biofilm + 0.15);
         break;
       case 'metabolic_efficiency_up':
-        // Reduce cost multipliers (handled in growth system via player state)
         player.energy = Math.min(1, player.energy + 0.1);
         break;
       case 'quorum_suppression':
-        // Reduce regulator effect of quorum (stored in gene for simplicity)
         player.gene.regulator = Math.min(1, player.gene.regulator + 0.1);
         break;
     }
   }
 
-  // Active skills
   useActiveSkill(player: PlayerState, skillId: string): boolean {
     const cooldown = player.activeSkillCooldowns.get(skillId);
     if (cooldown && cooldown > 0) return false;

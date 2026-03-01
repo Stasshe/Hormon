@@ -9,14 +9,20 @@ export default class ResultScene extends Phaser.Scene {
 
     this.add.rectangle(width / 2, height / 2, width, height, 0x1a0a0a);
 
-    this.add.text(width / 2, 100, 'GAME OVER', {
-      fontSize: '56px',
+    this.add.text(width / 2, 100, 'ゲームオーバー', {
+      fontSize: '52px',
       color: '#ff4444',
       fontStyle: 'bold'
     }).setOrigin(0.5);
 
-    this.add.text(width / 2, 180, data.reason || 'Unknown cause', {
-      fontSize: '24px',
+    const reasons: Record<string, string> = {
+      'host_destabilized': '宿主が不安定化！炎症で崩壊しました',
+      'colony_extinct': 'コロニーが全滅しました！'
+    };
+    const reasonText = reasons[data.reason] || data.reason || '不明な原因';
+
+    this.add.text(width / 2, 180, reasonText, {
+      fontSize: '22px',
       color: '#ffaaaa'
     }).setOrigin(0.5);
 
@@ -24,9 +30,9 @@ export default class ResultScene extends Phaser.Scene {
     const seconds = Math.floor((data.elapsedTime || 0) % 60);
 
     const statsLines = [
-      `Survival Time: ${minutes}m ${seconds}s`,
-      `Final Colony Size: ${Math.floor(data.colonySize || 0)}`,
-      `Level Reached: ${data.level || 1}`
+      `生存時間: ${minutes}分${seconds}秒`,
+      `最終コロニーサイズ: ${Math.floor(data.colonySize || 0)}`,
+      `到達レベル: ${data.level || 1}`
     ];
 
     statsLines.forEach((line, i) => {
@@ -36,19 +42,27 @@ export default class ResultScene extends Phaser.Scene {
       }).setOrigin(0.5);
     });
 
-    // Retry button
-    const retryBtn = this.add.text(width / 2, height - 120, '[ Retry ]', {
+    const retryBtn = this.add.text(width / 2, height - 120, '[ リトライ ]', {
       fontSize: '32px',
       color: '#44cc44',
       backgroundColor: '#222222',
       padding: { x: 24, y: 12 }
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
-    retryBtn.on('pointerdown', () => {
-      this.scene.start('BootScene');
-    });
-
+    retryBtn.on('pointerdown', () => this.restart());
     retryBtn.on('pointerover', () => retryBtn.setColor('#88ff88'));
     retryBtn.on('pointerout', () => retryBtn.setColor('#44cc44'));
+
+    this.input.keyboard!.on('keydown-SPACE', () => this.restart());
+    this.input.keyboard!.on('keydown-ENTER', () => this.restart());
+
+    this.add.text(width / 2, height - 60, 'Space / Enter / クリック でリトライ', {
+      fontSize: '14px',
+      color: '#888888'
+    }).setOrigin(0.5);
+  }
+
+  private restart() {
+    this.scene.start('BootScene');
   }
 }
