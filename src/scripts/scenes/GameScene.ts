@@ -48,6 +48,20 @@ export default class GameScene extends Phaser.Scene {
     super({ key: 'GameScene' });
   }
 
+  init() {
+    // Reset all mutable state on restart
+    this.enemies = [];
+    this.enemySprites = new Map();
+    this.growthTimer = 0;
+    this.inflammationTimer = 0;
+    this.immuneTimer = 0;
+    this.enemyAITimer = 0;
+    this.competitorSpawnTimer = 0;
+    this.autoAttackTimer = 0;
+    this.elapsedTime = 0;
+    this.isPaused = false;
+  }
+
   create() {
     const config = getConfig();
 

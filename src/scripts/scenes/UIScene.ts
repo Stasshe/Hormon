@@ -13,11 +13,15 @@ export default class UIScene extends Phaser.Scene {
   tutorialContainer!: Phaser.GameObjects.Container;
   tutorialShown = false;
 
+  private static firstPlay = true;
+
   constructor() {
     super({ key: 'UIScene' });
   }
 
   create() {
+    this.tutorialShown = false;
+
     const gameScene = this.scene.get('GameScene');
 
     this.hud = new HUD(this);
@@ -42,7 +46,10 @@ export default class UIScene extends Phaser.Scene {
       this.hud.showNotification(message);
     });
 
-    this.showTutorial();
+    if (UIScene.firstPlay) {
+      UIScene.firstPlay = false;
+      this.showTutorial();
+    }
   }
 
   showTutorial() {
