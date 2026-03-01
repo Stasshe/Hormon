@@ -3,7 +3,6 @@ services:
     name: Hormon
     runtime: static
     env: node
-    plan: free
     repo: https://github.com/Stasshe/Hormon
     branch: master
     buildCommand: npm install && npm run build
