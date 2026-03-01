@@ -1,6 +1,6 @@
 {
   "growth": {
-    "r_base": 0.02,
+    "r_base": 0.04,
     "c_toxin": 0.005,
     "c_biofilm": 0.002,
     "oxygen_sensitivity": 0.3,
@@ -27,8 +27,8 @@
     "defeat_threshold": 0.1
   },
   "immune": {
-    "base_spawn": 0.001,
-    "k_infl": 0.05,
+    "base_spawn": 0.05,
+    "k_infl": 0.2,
     "neutrophil_speed": 80,
     "neutrophil_attack": 50,
     "macrophage_speed": 40,
@@ -36,19 +36,19 @@
     "macrophage_aoe_radius": 48
   },
   "events": {
-    "antibiotic_chance_per_min": 0.01,
-    "plasmid_base_chance": 0.0001,
+    "antibiotic_chance_per_min": 0.03,
+    "plasmid_base_chance": 0.0005,
     "plasmid_growth_bonus": 0.005,
     "plasmid_immune_multiplier": 1.5
   },
   "player": {
     "initial_colony_size": 100,
     "initial_energy": 1.0,
-    "move_speed": 120,
-    "xp_per_second": 1,
+    "move_speed": 160,
+    "xp_per_second": 2,
     "xp_per_nutrient": 5,
-    "base_level_xp": 100,
-    "level_xp_multiplier": 1.5
+    "base_level_xp": 60,
+    "level_xp_multiplier": 1.4
   },
   "skills": {
     "biofilm_burst_cooldown": 15,
@@ -59,9 +59,9 @@
     "toxin_release_damage": 100
   },
   "map": {
-    "tileSize": 32,
+    "tileSize": 40,
     "gridWidth": 80,
-    "gridHeight": 16,
+    "gridHeight": 18,
     "zones": [
       { "name": "small_intestine", "startX": 0, "endX": 10, "oxygen": 0.6, "pH": 6.5, "nutrient": 0.8, "bile": 0.7, "baseK": 500 },
       { "name": "ileum", "startX": 10, "endX": 18, "oxygen": 0.4, "pH": 7.0, "nutrient": 0.6, "bile": 0.5, "baseK": 800 },

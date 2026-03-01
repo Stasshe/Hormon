@@ -35,6 +35,7 @@ export default class GameScene extends Phaser.Scene {
   inflammationTimer = 0;
   immuneTimer = 0;
   enemyAITimer = 0;
+  competitorSpawnTimer = 0;
   elapsedTime = 0;
 
   isPaused = false;
@@ -91,26 +92,38 @@ export default class GameScene extends Phaser.Scene {
     // Emit ready event for UI
     this.events.emit('game-ready', this.playerState, this.gameMap);
 
-    // Spawn initial competitors in various zones
+    // Spawn initial enemies throughout the map
     this.spawnInitialEnemies();
   }
 
   spawnInitialEnemies() {
     const config = getConfig();
-    // Spawn a few competitors and one pathogen
-    const competitorPositions = [
-      { x: 30, y: 5 }, { x: 35, y: 8 }, { x: 45, y: 6 },
-      { x: 50, y: 10 }, { x: 60, y: 7 }
-    ];
-    for (const pos of competitorPositions) {
-      if (pos.x < config.map.gridWidth && pos.y < config.map.gridHeight) {
-        const enemy = createEnemy('competitor', pos.x, pos.y);
-        this.spawnEnemy(enemy);
-      }
+    const gw = config.map.gridWidth;
+    const gh = config.map.gridHeight;
+
+    // Spread competitors across the entire map — ~20 competitors
+    for (let i = 0; i < 20; i++) {
+      const x = Math.floor(Math.random() * gw);
+      const y = Math.floor(Math.random() * gh);
+      // Don't spawn right on top of the player
+      if (Math.abs(x - this.playerState.tileX) < 3 && Math.abs(y - this.playerState.tileY) < 3) continue;
+      this.spawnEnemy(createEnemy('competitor', x, y));
     }
-    // One pathogen in the colon
-    const pathogen = createEnemy('pathogen', 40, 8);
-    this.spawnEnemy(pathogen);
+
+    // 3 pathogens in different zones (colon area)
+    const pathogenXs = [30, 45, 60];
+    for (const px of pathogenXs) {
+      const py = Math.floor(Math.random() * gh);
+      this.spawnEnemy(createEnemy('pathogen', px, py));
+    }
+
+    // A few immune cells already roaming
+    for (let i = 0; i < 3; i++) {
+      const x = Math.floor(Math.random() * gw);
+      const y = Math.floor(Math.random() * gh);
+      this.spawnEnemy(createEnemy('neutrophil', x, y));
+    }
+    this.spawnEnemy(createEnemy('macrophage', Math.floor(gw / 2), Math.floor(gh / 2)));
   }
 
   update(time: number, delta: number) {
@@ -152,6 +165,24 @@ export default class GameScene extends Phaser.Scene {
         this.spawnEnemy(enemy);
       }
       this.immuneTimer = 0;
+    }
+
+    // Periodic competitor/pathogen respawning every 8 seconds
+    this.competitorSpawnTimer += dt;
+    if (this.competitorSpawnTimer >= 8) {
+      this.competitorSpawnTimer = 0;
+      const bacteriaCount = this.enemies.filter(e => e.type === 'competitor' || e.type === 'pathogen').length;
+      // Keep at least ~15 bacteria on the field
+      if (bacteriaCount < 15) {
+        const gw = config.map.gridWidth;
+        const gh = config.map.gridHeight;
+        for (let i = 0; i < 3; i++) {
+          const x = Math.floor(Math.random() * gw);
+          const y = Math.floor(Math.random() * gh);
+          const type = Math.random() < 0.2 ? 'pathogen' : 'competitor';
+          this.spawnEnemy(createEnemy(type as any, x, y));
+        }
+      }
     }
 
     // Enemy AI tick

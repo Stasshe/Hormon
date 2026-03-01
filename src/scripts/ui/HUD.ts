@@ -1,6 +1,16 @@
 import { PlayerState } from '../models/PlayerState';
 import { GameMap } from '../models/GameMap';
 
+const ZONE_DISPLAY_NAMES: Record<string, string> = {
+  small_intestine: 'Small Intestine',
+  ileum: 'Ileum',
+  cecum: 'Cecum',
+  colon_ascending: 'Ascending Colon',
+  colon_transverse: 'Transverse Colon',
+  colon_descending: 'Descending Colon',
+  rectum: 'Rectum'
+};
+
 export class HUD {
   scene: Phaser.Scene;
 
@@ -9,8 +19,12 @@ export class HUD {
   // Top-center: Host Stability
   stabilityBar!: Phaser.GameObjects.Graphics;
   stabilityLabel!: Phaser.GameObjects.Text;
+  // Zone label
+  zoneLabel!: Phaser.GameObjects.Text;
   // Top-right: Timers
   timerText!: Phaser.GameObjects.Text;
+  // Tile info (below stats)
+  tileInfoText!: Phaser.GameObjects.Text;
   // Notifications
   notificationText!: Phaser.GameObjects.Text;
   notificationTimer: number = 0;
@@ -30,11 +44,26 @@ export class HUD {
       padding: { x: 8, y: 6 }
     }).setDepth(100).setScrollFactor(0);
 
+    // Tile info below stats
+    this.tileInfoText = scene.add.text(10, 120, '', {
+      fontSize: '11px',
+      color: '#aabbcc',
+      backgroundColor: '#00000066',
+      padding: { x: 6, y: 4 }
+    }).setDepth(100).setScrollFactor(0);
+
     // Top-center: stability bar
     this.stabilityBar = scene.add.graphics().setDepth(100).setScrollFactor(0);
     this.stabilityLabel = scene.add.text(width / 2, 10, 'Host Stability', {
       fontSize: '14px',
       color: '#ffffff',
+      fontStyle: 'bold'
+    }).setOrigin(0.5, 0).setDepth(100).setScrollFactor(0);
+
+    // Zone label below stability bar
+    this.zoneLabel = scene.add.text(width / 2, 50, '', {
+      fontSize: '13px',
+      color: '#aaddff',
       fontStyle: 'bold'
     }).setOrigin(0.5, 0).setDepth(100).setScrollFactor(0);
 
@@ -54,7 +83,7 @@ export class HUD {
     }).setOrigin(0.5).setDepth(100).setScrollFactor(0).setAlpha(0);
 
     // Peristalsis warning
-    this.peristalsisWarning = scene.add.text(width / 2, 120, '', {
+    this.peristalsisWarning = scene.add.text(width / 2, 110, '', {
       fontSize: '16px',
       color: '#ff8844',
       fontStyle: 'bold'
@@ -71,6 +100,21 @@ export class HUD {
       `Energy: ${player.energy.toFixed(2)}  ${player.virulent ? '[VIRULENT]' : ''}`
     ];
     this.statsText.setText(statsLines.join('\n'));
+
+    // Current tile info
+    const currentTile = gameMap.getTile(player.tileX, player.tileY);
+    if (currentTile) {
+      const tileLines = [
+        `O2: ${currentTile.oxygen.toFixed(2)}  pH: ${currentTile.pH.toFixed(1)}  Nutr: ${currentTile.nutrient.toFixed(2)}`,
+        `Bile: ${currentTile.bile.toFixed(2)}  K: ${Math.floor(currentTile.capacityK)}  Infl: ${currentTile.inflammation_local.toFixed(3)}`,
+        `Layer: ${currentTile.layer}`
+      ];
+      this.tileInfoText.setText(tileLines.join('\n'));
+
+      // Zone label
+      const displayName = ZONE_DISPLAY_NAMES[currentTile.zoneName] || currentTile.zoneName;
+      this.zoneLabel.setText(displayName);
+    }
 
     // Stability bar
     const allTiles = gameMap.getAllTiles();

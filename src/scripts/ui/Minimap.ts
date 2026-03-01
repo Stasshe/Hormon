@@ -12,8 +12,8 @@ export class Minimap {
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
 
-    this.width = 160;
-    this.height = 40;
+    this.width = 180;
+    this.height = 50;
     this.x = scene.cameras.main.width - this.width - 10;
     this.y = scene.cameras.main.height - this.height - 10;
 
