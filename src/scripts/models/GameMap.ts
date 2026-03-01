@@ -81,6 +81,17 @@ export class GameMap {
     return tiles;
   }
 
+  getTilesInRange(cx: number, cy: number, range: number): Tile[] {
+    const tiles: Tile[] = [];
+    for (let dy = -range; dy <= range; dy++) {
+      for (let dx = -range; dx <= range; dx++) {
+        const tile = this.getTile(cx + dx, cy + dy);
+        if (tile) tiles.push(tile);
+      }
+    }
+    return tiles;
+  }
+
   getAllTiles(): Tile[] {
     const all: Tile[] = [];
     for (let y = 0; y < this.gridHeight; y++) {

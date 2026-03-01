@@ -23,13 +23,11 @@ export class Player {
     const startX = state.tileX * tileSize + tileSize / 2;
     const startY = state.tileY * tileSize + tileSize / 2;
 
-    // Create player texture (circle)
     const gfx = scene.add.graphics();
     gfx.fillStyle(0x44dd44, 1);
     gfx.fillCircle(16, 16, 14);
     gfx.lineStyle(2, 0x88ff88, 1);
     gfx.strokeCircle(16, 16, 14);
-    // Inner detail
     gfx.fillStyle(0x66ff66, 0.6);
     gfx.fillCircle(12, 12, 5);
     gfx.generateTexture('player', 32, 32);
@@ -40,18 +38,15 @@ export class Player {
     this.sprite.setDepth(10);
     this.sprite.setDisplaySize(tileSize * 0.8, tileSize * 0.8);
 
-    // Tile highlight
     this.tileHighlight = scene.add.graphics();
     this.tileHighlight.setDepth(2);
 
-    // Colony size text
     this.colonyText = scene.add.text(startX, startY - tileSize * 0.6, '', {
       fontSize: '12px',
       color: '#88ff88',
       fontStyle: 'bold'
     }).setOrigin(0.5).setDepth(11);
 
-    // Input
     this.cursors = scene.input.keyboard!.createCursorKeys();
     this.wasd = {
       W: scene.input.keyboard!.addKey('W'),
@@ -62,7 +57,8 @@ export class Player {
   }
 
   update(dt: number) {
-    const speed = this.config.player.move_speed;
+    // Speed scales with moveSpeedBonus
+    const speed = this.config.player.move_speed * (1 + this.state.moveSpeedBonus);
     let vx = 0;
     let vy = 0;
 
@@ -72,7 +68,6 @@ export class Player {
     if (this.cursors.up.isDown || this.wasd.W.isDown) vy = -speed;
     else if (this.cursors.down.isDown || this.wasd.S.isDown) vy = speed;
 
-    // Normalize diagonal
     if (vx !== 0 && vy !== 0) {
       vx *= 0.707;
       vy *= 0.707;
@@ -80,16 +75,13 @@ export class Player {
 
     this.sprite.setVelocity(vx, vy);
 
-    // Update tile position
     const tileSize = this.config.map.tileSize;
     this.state.tileX = Math.floor(this.sprite.x / tileSize);
     this.state.tileY = Math.floor(this.sprite.y / tileSize);
 
-    // Clamp
     this.state.tileX = Math.max(0, Math.min(this.gameMap.gridWidth - 1, this.state.tileX));
     this.state.tileY = Math.max(0, Math.min(this.gameMap.gridHeight - 1, this.state.tileY));
 
-    // Update tile highlight
     this.tileHighlight.clear();
     this.tileHighlight.lineStyle(2, 0x88ff88, 0.6);
     this.tileHighlight.strokeRect(
@@ -99,12 +91,19 @@ export class Player {
       tileSize
     );
 
-    // Update colony text
     this.colonyText.setPosition(this.sprite.x, this.sprite.y - tileSize * 0.6);
     this.colonyText.setText(`N: ${Math.floor(this.state.colonySize)}`);
 
-    // Pulse effect based on colony size
-    const pulseFactor = 0.8 + 0.2 * Math.sin(this.scene.time.now / 500) * Math.min(1, this.state.colonySize / 500);
-    this.sprite.setDisplaySize(tileSize * pulseFactor, tileSize * pulseFactor);
+    // Visual scaling: sprite grows with colony size
+    const sizeScale = 0.8 + Math.min(0.7, this.state.colonySize / 1500);
+    const pulse = 1 + 0.05 * Math.sin(this.scene.time.now / 400);
+    this.sprite.setDisplaySize(tileSize * sizeScale * pulse, tileSize * sizeScale * pulse);
+
+    // Tint gets more vibrant with level
+    if (this.state.level >= 5) {
+      this.sprite.setTint(0x66ff66);
+    } else if (this.state.level >= 3) {
+      this.sprite.setTint(0x55ee55);
+    }
   }
 }

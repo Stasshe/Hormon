@@ -20,11 +20,32 @@ export interface PlayerState {
   xp: number;
   level: number;
   xpToNext: number;
+
+  // Auto-attack scaling
+  attackRange: number;
+  attackDamage: number;
+
+  // Overexpress
+  overexpressCooldown: number;
+  overexpressMaxCooldown: number;
+  overexpressPower: number;
+
+  // Symbiosis bonuses
+  regenRate: number;
+  inflammationDecayBonus: number;
+  nutrientMultiplier: number;
+
+  // Colonization bonuses
+  moveSpeedBonus: number;
+  capacityBonus: number;
+
+  // Skill pick counts (for stacking display)
+  skillCounts: Map<string, number>;
 }
 
 export function createInitialPlayerState(config: GameConfig): PlayerState {
   return {
-    tileX: 20,  // Start in cecum area
+    tileX: 20,
     tileY: Math.floor(config.map.gridHeight / 2),
     colonySize: config.player.initial_colony_size,
     gene: {
@@ -40,6 +61,22 @@ export function createInitialPlayerState(config: GameConfig): PlayerState {
     activeSkillCooldowns: new Map<string, number>(),
     xp: 0,
     level: 1,
-    xpToNext: config.player.base_level_xp
+    xpToNext: config.player.base_level_xp,
+
+    attackRange: 3,
+    attackDamage: 1.0,
+
+    overexpressCooldown: 0,
+    overexpressMaxCooldown: 30,
+    overexpressPower: 1.0,
+
+    regenRate: 0,
+    inflammationDecayBonus: 0,
+    nutrientMultiplier: 1.0,
+
+    moveSpeedBonus: 0,
+    capacityBonus: 0,
+
+    skillCounts: new Map<string, number>()
   };
 }

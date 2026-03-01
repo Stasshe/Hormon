@@ -22,6 +22,7 @@ export class HUD {
   tileInfoText!: Phaser.GameObjects.Text;
   notificationText!: Phaser.GameObjects.Text;
   peristalsisWarning!: Phaser.GameObjects.Text;
+  xpBar!: Phaser.GameObjects.Graphics;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -34,7 +35,7 @@ export class HUD {
       padding: { x: 8, y: 6 }
     }).setDepth(100).setScrollFactor(0);
 
-    this.tileInfoText = scene.add.text(10, 120, '', {
+    this.tileInfoText = scene.add.text(10, 130, '', {
       fontSize: '11px',
       color: '#aabbcc',
       backgroundColor: '#00000066',
@@ -72,15 +73,18 @@ export class HUD {
       color: '#ff8844',
       fontStyle: 'bold'
     }).setOrigin(0.5).setDepth(100).setScrollFactor(0).setAlpha(0);
+
+    // XP bar at bottom
+    this.xpBar = scene.add.graphics().setDepth(100).setScrollFactor(0);
   }
 
   update(player: PlayerState, gameMap: GameMap, elapsed: number) {
     const statsLines = [
-      `コロニー: ${Math.floor(player.colonySize)}`,
-      `Lv.${player.level}  経験値: ${Math.floor(player.xp)}/${player.xpToNext}`,
-      `毒素: ${player.gene.toxin.toFixed(2)}  接着: ${player.gene.adhesion.toFixed(2)}`,
-      `膜: ${player.gene.biofilm.toFixed(2)}  制御: ${player.gene.regulator.toFixed(2)}`,
-      `${player.virulent ? '[毒性化]' : ''}`
+      `コロニー: ${Math.floor(player.colonySize)}  Lv.${player.level}`,
+      `XP: ${Math.floor(player.xp)}/${player.xpToNext}`,
+      `攻撃: x${player.attackDamage.toFixed(1)}  範囲: ${player.attackRange}`,
+      `膜: ${player.gene.biofilm.toFixed(2)}  接着: ${player.gene.adhesion.toFixed(2)}`,
+      `再生: ${player.regenRate.toFixed(1)}/s  速度: +${Math.floor(player.moveSpeedBonus * 100)}%`
     ];
     this.statsText.setText(statsLines.join('\n'));
 
@@ -88,8 +92,7 @@ export class HUD {
     if (currentTile) {
       const tileLines = [
         `酸素: ${currentTile.oxygen.toFixed(2)}  pH: ${currentTile.pH.toFixed(1)}  栄養: ${currentTile.nutrient.toFixed(2)}`,
-        `胆汁: ${currentTile.bile.toFixed(2)}  容量: ${Math.floor(currentTile.capacityK)}  炎症: ${currentTile.inflammation_local.toFixed(3)}`,
-        `層: ${currentTile.layer === 'lumen' ? '管腔' : currentTile.layer === 'mucus' ? '粘膜' : '上皮'}`
+        `胆汁: ${currentTile.bile.toFixed(2)}  容量: ${Math.floor(currentTile.capacityK)}  炎症: ${currentTile.inflammation_local.toFixed(3)}`
       ];
       this.tileInfoText.setText(tileLines.join('\n'));
 
@@ -105,6 +108,9 @@ export class HUD {
     const minutes = Math.floor(elapsed / 60);
     const seconds = Math.floor(elapsed % 60);
     this.timerText.setText(`時間: ${minutes}:${seconds.toString().padStart(2, '0')}`);
+
+    // XP bar
+    this.drawXPBar(player);
 
     if (this.notificationText.alpha > 0) {
       this.notificationText.alpha -= 0.005;
@@ -137,6 +143,21 @@ export class HUD {
     this.stabilityBar.strokeRect(x, y, barWidth, barHeight);
 
     this.stabilityLabel.setText(`宿主安定度: ${Math.floor(stability * 100)}%`);
+  }
+
+  private drawXPBar(player: PlayerState) {
+    const width = this.scene.cameras.main.width;
+    const barWidth = width - 20;
+    const barHeight = 4;
+    const x = 10;
+    const y = this.scene.cameras.main.height - 8;
+    const ratio = Math.min(1, player.xp / player.xpToNext);
+
+    this.xpBar.clear();
+    this.xpBar.fillStyle(0x222244, 0.8);
+    this.xpBar.fillRect(x, y, barWidth, barHeight);
+    this.xpBar.fillStyle(0x4488ff, 1);
+    this.xpBar.fillRect(x, y, barWidth * ratio, barHeight);
   }
 
   showPeristalsisWarning(secondsLeft: number) {

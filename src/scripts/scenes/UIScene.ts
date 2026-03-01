@@ -32,6 +32,7 @@ export default class UIScene extends Phaser.Scene {
     gameScene.events.on('game-update', (playerState: PlayerState, gameMap: GameMap, elapsed: number) => {
       this.hud.update(playerState, gameMap, elapsed);
       this.minimap.update(gameMap, playerState);
+      this.skillBar.update(playerState);
     });
 
     gameScene.events.on('level-up', (playerState: PlayerState) => {
@@ -58,17 +59,17 @@ export default class UIScene extends Phaser.Scene {
 
     this.tutorialContainer = this.add.container(0, 0).setDepth(300);
 
-    const bg = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.8);
+    const bg = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.85);
     this.tutorialContainer.add(bg);
 
-    const title = this.add.text(width / 2, 30, 'Hormon!', {
+    const title = this.add.text(width / 2, 25, 'Hormon!', {
       fontSize: '42px',
       color: '#44dd44',
       fontStyle: 'bold'
     }).setOrigin(0.5);
     this.tutorialContainer.add(title);
 
-    const subtitle = this.add.text(width / 2, 72, '腸内で生き延びる大腸菌ローグライク', {
+    const subtitle = this.add.text(width / 2, 65, '腸内で生き延びる大腸菌ローグライク', {
       fontSize: '16px',
       color: '#88ff88'
     }).setOrigin(0.5);
@@ -76,19 +77,16 @@ export default class UIScene extends Phaser.Scene {
 
     const instructions = [
       { icon: 'WASD/矢印', desc: '腸内を移動する' },
-      { icon: '目標', desc: 'コロニーを育てつつ、宿主を安定に保つ' },
-      { icon: '自動攻撃', desc: '近くの競合菌・病原菌を自動でバクテリオシンで攻撃' },
-      { icon: '体当たり', desc: '競合菌にぶつかると互いにダメージ（倒すとXP＋吸収）' },
-      { icon: '免疫細胞', desc: '好中球(青)・マクロファージ(水色)は接触でコロニー減少' },
-      { icon: '蠕動', desc: '20秒ごとに腸が動き、接着力が低いと右に流される' },
-      { icon: '1/2/3キー', desc: 'スキル: バイオフィルム / 代謝物 / 毒素 放出' },
-      { icon: 'レベルアップ', desc: '経験値が溜まると遺伝子変異を選択できる' },
+      { icon: '自動攻撃', desc: '近くの敵菌をバクテリオシンで自動攻撃（レベルで強化）' },
+      { icon: 'SPACE', desc: '毒素暴走 — 大ダメージだが炎症急上昇！ジレンマ。' },
+      { icon: 'レベルアップ', desc: '毒性/共生/定着の3つのパスから選択してビルド' },
+      { icon: '蠕動', desc: '定期的に腸が動く。接着力が低いと流される' },
+      { icon: '免疫', desc: '炎症が上がると免疫細胞出現。暴走しすぎると掃討イベント' },
     ];
 
-    const panelY = 105;
+    const panelY = 100;
     instructions.forEach((inst, i) => {
-      const yy = panelY + i * 32;
-
+      const yy = panelY + i * 34;
       const iconText = this.add.text(width / 2 - 280, yy, inst.icon, {
         fontSize: '13px',
         color: '#ffdd44',
@@ -105,29 +103,45 @@ export default class UIScene extends Phaser.Scene {
       this.tutorialContainer.add(descText);
     });
 
-    // Entity legend
-    const legendY = panelY + instructions.length * 32 + 10;
-    const legends = [
-      { color: 0x44dd44, label: '自分（大腸菌）' },
-      { color: 0xddaa44, label: '競合菌（バクテロイデス）' },
-      { color: 0xdd4444, label: '病原菌（C.ディフィシル）' },
-      { color: 0x4488dd, label: '好中球（免疫）' },
-      { color: 0x44dddd, label: 'マクロファージ（免疫）' },
-    ];
-
-    const legendTitle = this.add.text(width / 2, legendY, '-- 登場する生物 --', {
-      fontSize: '12px',
+    // Build paths explanation
+    const pathY = panelY + instructions.length * 34 + 10;
+    const pathTitle = this.add.text(width / 2, pathY, '-- 3つのビルドパス --', {
+      fontSize: '13px',
       color: '#aaaaaa'
     }).setOrigin(0.5);
-    this.tutorialContainer.add(legendTitle);
+    this.tutorialContainer.add(pathTitle);
+
+    const paths = [
+      { name: '毒性', color: '#ff4444', desc: '攻撃力・範囲・暴走強化' },
+      { name: '共生', color: '#4488ff', desc: '回復・炎症抑制・XP効率' },
+      { name: '定着', color: '#ddaa22', desc: '接着・バイオフィルム・速度' },
+    ];
+
+    paths.forEach((p, i) => {
+      const px = width / 2 - 200 + i * 200;
+      const py = pathY + 22;
+      const pt = this.add.text(px, py, `${p.name}: ${p.desc}`, {
+        fontSize: '11px',
+        color: p.color
+      }).setOrigin(0.5);
+      this.tutorialContainer.add(pt);
+    });
+
+    // Entity legend
+    const legendY = pathY + 50;
+    const legends = [
+      { color: 0x44dd44, label: '自分（大腸菌）' },
+      { color: 0xddaa44, label: '競合菌' },
+      { color: 0xdd4444, label: '病原菌' },
+      { color: 0x4488dd, label: '好中球' },
+      { color: 0x44dddd, label: 'マクロファージ' },
+    ];
 
     legends.forEach((leg, i) => {
       const lx = width / 2 - 240 + (i % 3) * 200;
-      const ly = legendY + 18 + Math.floor(i / 3) * 24;
-
+      const ly = legendY + Math.floor(i / 3) * 24;
       const swatch = this.add.rectangle(lx, ly + 7, 12, 12, leg.color);
       this.tutorialContainer.add(swatch);
-
       const label = this.add.text(lx + 12, ly, leg.label, {
         fontSize: '12px',
         color: '#cccccc'
@@ -135,25 +149,13 @@ export default class UIScene extends Phaser.Scene {
       this.tutorialContainer.add(label);
     });
 
-    // Game over conditions
-    const goY = legendY + 72;
-    const goTitle = this.add.text(width / 2, goY, '-- ゲームオーバー条件 --', {
+    // Game over
+    const goY = legendY + 55;
+    const goLines = this.add.text(width / 2, goY, 'ゲームオーバー: コロニー全滅 or 宿主安定度崩壊', {
       fontSize: '12px',
       color: '#ff8888'
     }).setOrigin(0.5);
-    this.tutorialContainer.add(goTitle);
-
-    const goLines = [
-      'コロニーが0になる（全滅）',
-      '宿主安定度が下がりすぎる（炎症暴走）'
-    ];
-    goLines.forEach((line, i) => {
-      const t = this.add.text(width / 2, goY + 18 + i * 20, line, {
-        fontSize: '12px',
-        color: '#ffaaaa'
-      }).setOrigin(0.5);
-      this.tutorialContainer.add(t);
-    });
+    this.tutorialContainer.add(goLines);
 
     // Start button
     const startBtn = this.add.text(width / 2, height - 35, '[ クリック or キー押下 でスタート ]', {

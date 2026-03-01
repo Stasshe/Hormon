@@ -10,48 +10,68 @@ export class ImmuneSystem {
   }
 
   update(hostInflammation: number, gameMap: GameMap, dt: number): Enemy[] {
-    const cfg = this.config.immune;
     const newEnemies: Enemy[] = [];
 
-    const spawnProb = (cfg.base_spawn + cfg.k_infl * hostInflammation) * dt;
+    // Tier-based spawning - immune is a CONSEQUENCE of inflammation
+    // Tier 0: inflammation < 0.5 → no spawns (safe zone)
+    // Tier 1: 0.5-1.5 → neutrophils only, slow
+    // Tier 2: 1.5-3.0 → neutrophils frequent + rare macrophage
+    // Tier 3: 3.0-5.0 → both frequent
+    // Tier 4: > 5.0 → handled by purge event in GameScene
 
-    if (Math.random() < spawnProb) {
-      const type = this.chooseImmuneType(hostInflammation);
-      const spawnTile = this.findInflammedTile(gameMap);
+    if (hostInflammation < 0.5) {
+      return newEnemies; // Peace - no immune activity
+    }
 
-      if (spawnTile) {
-        const enemy = createEnemy(type, spawnTile.x, spawnTile.y);
-        enemy.speed = type === 'neutrophil' ? cfg.neutrophil_speed : cfg.macrophage_speed;
-        newEnemies.push(enemy);
+    let spawnProb: number;
+    let macrophageChance: number;
+    let spawnCount: number;
+
+    if (hostInflammation < 1.5) {
+      // Tier 1: Light response
+      spawnProb = 0.15 * dt;
+      macrophageChance = 0;
+      spawnCount = 1;
+    } else if (hostInflammation < 3.0) {
+      // Tier 2: Moderate response
+      spawnProb = 0.3 * dt;
+      macrophageChance = 0.15;
+      spawnCount = 1;
+    } else {
+      // Tier 3: Heavy response
+      spawnProb = 0.5 * dt;
+      macrophageChance = 0.35;
+      spawnCount = 2;
+    }
+
+    for (let i = 0; i < spawnCount; i++) {
+      if (Math.random() < spawnProb) {
+        const type: EnemyType = Math.random() < macrophageChance ? 'macrophage' : 'neutrophil';
+        const spawnTile = this.findInflammedTile(gameMap);
+
+        if (spawnTile) {
+          const cfg = this.config.immune;
+          const enemy = createEnemy(type, spawnTile.x, spawnTile.y);
+          enemy.speed = type === 'neutrophil' ? cfg.neutrophil_speed : cfg.macrophage_speed;
+          newEnemies.push(enemy);
+        }
       }
     }
 
     return newEnemies;
   }
 
-  private chooseImmuneType(hostInflammation: number): EnemyType {
-    if (hostInflammation > 2.0) {
-      return Math.random() < 0.4 ? 'macrophage' : 'neutrophil';
-    } else if (hostInflammation > 0.5) {
-      return Math.random() < 0.2 ? 'macrophage' : 'neutrophil';
-    }
-    return 'neutrophil';
-  }
-
   private findInflammedTile(gameMap: GameMap): { x: number; y: number } | null {
     const allTiles = gameMap.getAllTiles();
-    // Weight by inflammation
     const weighted = allTiles
       .filter(t => t.inflammation_local > 0.01)
       .sort((a, b) => b.inflammation_local - a.inflammation_local);
 
     if (weighted.length > 0) {
-      // Pick from top inflamed tiles with some randomness
       const idx = Math.floor(Math.random() * Math.min(5, weighted.length));
       return { x: weighted[idx].x, y: weighted[idx].y };
     }
 
-    // Random tile if no inflammation
     return {
       x: Math.floor(Math.random() * gameMap.gridWidth),
       y: Math.floor(Math.random() * gameMap.gridHeight)
