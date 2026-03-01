@@ -1,0 +1,81 @@
+{
+  "growth": {
+    "r_base": 0.02,
+    "c_toxin": 0.005,
+    "c_biofilm": 0.002,
+    "oxygen_sensitivity": 0.3,
+    "optimal_pH": 7.0,
+    "pH_sigma": 0.6
+  },
+  "quorum": {
+    "w_q": 1.0,
+    "w_infl": 0.8,
+    "w_reg": 1.5,
+    "threshold": 5.3
+  },
+  "peristalsis": {
+    "interval": 20,
+    "flow_fraction": 0.3,
+    "adhesion_threshold": 0.5,
+    "flow_strength": 1
+  },
+  "inflammation": {
+    "alpha_toxin": 0.0005,
+    "gamma_benefit": 0.0008,
+    "delta": 0.01,
+    "stability_scale": 5.0,
+    "defeat_threshold": 0.1
+  },
+  "immune": {
+    "base_spawn": 0.001,
+    "k_infl": 0.05,
+    "neutrophil_speed": 80,
+    "neutrophil_attack": 50,
+    "macrophage_speed": 40,
+    "macrophage_attack": 30,
+    "macrophage_aoe_radius": 48
+  },
+  "events": {
+    "antibiotic_chance_per_min": 0.01,
+    "plasmid_base_chance": 0.0001,
+    "plasmid_growth_bonus": 0.005,
+    "plasmid_immune_multiplier": 1.5
+  },
+  "player": {
+    "initial_colony_size": 100,
+    "initial_energy": 1.0,
+    "move_speed": 120,
+    "xp_per_second": 1,
+    "xp_per_nutrient": 5,
+    "base_level_xp": 100,
+    "level_xp_multiplier": 1.5
+  },
+  "skills": {
+    "biofilm_burst_cooldown": 15,
+    "biofilm_burst_duration": 5,
+    "metabolite_shot_cooldown": 10,
+    "metabolite_shot_strength": 0.5,
+    "toxin_release_cooldown": 20,
+    "toxin_release_damage": 100
+  },
+  "map": {
+    "tileSize": 32,
+    "gridWidth": 80,
+    "gridHeight": 16,
+    "zones": [
+      { "name": "small_intestine", "startX": 0, "endX": 10, "oxygen": 0.6, "pH": 6.5, "nutrient": 0.8, "bile": 0.7, "baseK": 500 },
+      { "name": "ileum", "startX": 10, "endX": 18, "oxygen": 0.4, "pH": 7.0, "nutrient": 0.6, "bile": 0.5, "baseK": 800 },
+      { "name": "cecum", "startX": 18, "endX": 26, "oxygen": 0.15, "pH": 6.0, "nutrient": 0.7, "bile": 0.2, "baseK": 2000 },
+      { "name": "colon_ascending", "startX": 26, "endX": 38, "oxygen": 0.05, "pH": 5.8, "nutrient": 0.5, "bile": 0.1, "baseK": 3000 },
+      { "name": "colon_transverse", "startX": 38, "endX": 52, "oxygen": 0.03, "pH": 6.2, "nutrient": 0.4, "bile": 0.05, "baseK": 3500 },
+      { "name": "colon_descending", "startX": 52, "endX": 66, "oxygen": 0.02, "pH": 6.5, "nutrient": 0.3, "bile": 0.03, "baseK": 2500 },
+      { "name": "rectum", "startX": 66, "endX": 80, "oxygen": 0.01, "pH": 6.8, "nutrient": 0.2, "bile": 0.01, "baseK": 1500 }
+    ]
+  },
+  "ticks": {
+    "growth_interval_ms": 500,
+    "inflammation_interval_ms": 250,
+    "immune_check_interval_ms": 1000,
+    "enemy_ai_interval_ms": 300
+  }
+}

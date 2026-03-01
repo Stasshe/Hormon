@@ -1,6 +1,6 @@
 {
-  "short_name": "Phaser Game",
-  "name": "My Cool Phaser 3 Game",
+  "short_name": "Hormon!",
+  "name": "Hormon! - Bacterial Roguelike",
   "icons": [
     {
       "src": "./icons/icons-192.png",
@@ -14,7 +14,7 @@
     }
   ],
   "start_url": "./index.html",
-  "background_color": "#e6e6e6",
+  "background_color": "#1a1a2e",
   "display": "fullscreen",
   "orientation": "landscape",
   "scope": "./",
